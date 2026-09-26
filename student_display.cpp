@@ -8,7 +8,8 @@ int main() {
     cout << "Enter the roll numbers of 5 students:" << endl;
 
     // Loop to take input from the user
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) 
+    {
         cout << "Enter roll number for student " << (i + 1) << ": ";
         cin >> rollNumbers[i];
     }
@@ -16,7 +17,8 @@ int main() {
     cout << "\nDisplaying the roll numbers of students:" << endl;
 
     // Loop to display the stored roll numbers
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) 
+    {
         cout << "Student " << (i + 1) << " Roll Number: " << rollNumbers[i] << endl;
     }
 
