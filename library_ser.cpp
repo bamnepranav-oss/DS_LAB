@@ -16,7 +16,8 @@ int main() {
     cin >> searchID;
 
     for (int i = 0; i < 5; i++) {
-        if (book[i] == searchID) {
+        if (book[i] == searchID)
+        {
             found = true;
             break;
         }
