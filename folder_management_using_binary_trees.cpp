@@ -1,157 +1,187 @@
+cpp
 #include <iostream>
 #include <string>
 using namespace std;
 
-struct Folder {
+struct Folder
+{
     string name;
     Folder* left;
     Folder* right;
-
-    Folder(string n) {
-        name = n;
-        left = nullptr;
-        right = nullptr;
-    }
 };
 
-class FolderManagement {
-private:
-    Folder* root;
+// Creates a new folder
+Folder* createFolder(string name)
+{
+    Folder* newFolder = new Folder;
 
-    Folder* searchFolder(Folder* node, string name) {
-        if (node == nullptr)
-            return nullptr;
+    newFolder->name = name;
+    newFolder->left = NULL;
+    newFolder->right = NULL;
 
-        if (node->name == name)
-            return node;
+    return newFolder;
+}
 
-        Folder* found = searchFolder(node->left, name);
+// Search folder
+Folder* searchFolder(Folder* root, string key)
+{
+    if (root == NULL)
+        return NULL;
 
-        if (found != nullptr)
-            return found;
+    if (root->name == key)
+        return root;
 
-        return searchFolder(node->right, name);
+    Folder* found = searchFolder(root->left, key);
+
+    if (found != NULL)
+        return found;
+
+    return searchFolder(root->right, key);
+}
+
+// Add subfolder
+void addSubFolder(Folder* root, string parent, string child)
+{
+    Folder* p = searchFolder(root, parent);
+
+    if (p == NULL)
+    {
+        cout << "Parent folder not found!" << endl;
+        return;
     }
 
-    void display(Folder* node, int level) {
-        if (node == nullptr)
-            return;
-
-        for (int i = 0; i < level; i++)
-            cout << "    ";
-
-        cout << "|-- " << node->name << endl;
-
-        display(node->left, level + 1);
-        display(node->right, level + 1);
+    if (p->left == NULL)
+    {
+        p->left = createFolder(child);
+        cout << "Subfolder added to left successfully!" << endl;
     }
-
-public:
-    FolderManagement() {
-        root = nullptr;
+    else if (p->right == NULL)
+    {
+        p->right = createFolder(child);
+        cout << "Subfolder added to right successfully!" << endl;
     }
-
-    void createRoot(string name) {
-        if (root == nullptr) {
-            root = new Folder(name);
-            cout << "Main folder created successfully!\n";
-        } else {
-            cout << "Main folder already exists!\n";
-        }
+    else
+    {
+        cout << "Folder can have only two subfolders!" << endl;
     }
+}
 
-    void addSubFolder(string parent, string child) {
-        Folder* p = searchFolder(root, parent);
+// Preorder traversal
+void preorder(Folder* root)
+{
+    if (root == NULL)
+        return;
 
-        if (p == nullptr) {
-            cout << "Parent folder not found!\n";
-            return;
-        }
+    cout << root->name << " ";
 
-        if (p->left == nullptr) {
-            p->left = new Folder(child);
-            cout << "Subfolder added to left successfully!\n";
-        }
-        else if (p->right == nullptr) {
-            p->right = new Folder(child);
-            cout << "Subfolder added to right successfully!\n";
-        }
-        else {
-            cout << "Folder can have only two subfolders!\n";
-        }
-    }
+    preorder(root->left);
+    preorder(root->right);
+}
 
-    void search(string name) {
-        if (searchFolder(root, name) != nullptr)
-            cout << "Folder '" << name << "' found!\n";
-        else
-            cout << "Folder not found!\n";
-    }
+// Display folder structure
+void display(Folder* root, int level)
+{
+    if (root == NULL)
+        return;
 
-    void displayStructure() {
-        if (root == nullptr) {
-            cout << "No folders available!\n";
-            return;
-        }
+    for (int i = 0; i < level; i++)
+        cout << "    ";
 
-        cout << "\n----- FOLDER STRUCTURE -----\n";
-        display(root, 0);
-    }
-};
+    cout << "|-- " << root->name << endl;
 
-int main() {
-    FolderManagement fm;
+    display(root->left, level + 1);
+    display(root->right, level + 1);
+}
+
+int main()
+{
+    Folder* root = NULL;
+
     int choice;
-    string folder, parent, child;
+    string name, parent, child;
 
-    do {
+    do
+    {
         cout << "\n===== FOLDER MANAGEMENT SYSTEM =====\n";
         cout << "1. Create Main Folder\n";
         cout << "2. Add Subfolder\n";
         cout << "3. Search Folder\n";
         cout << "4. Display Folder Structure\n";
-        cout << "5. Exit\n";
+        cout << "5. Preorder Traversal\n";
+        cout << "6. Exit\n";
 
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
+        switch (choice)
+        {
+            case 1:
+                if (root == NULL)
+                {
+                    cout << "Enter main folder name: ";
+                    cin >> name;
 
-        case 1:
-            cout << "Enter main folder name: ";
-            cin >> folder;
-            fm.createRoot(folder);
-            break;
+                    root = createFolder(name);
 
-        case 2:
-            cout << "Enter parent folder name: ";
-            cin >> parent;
+                    cout << "Main folder created successfully!" << endl;
+                }
+                else
+                {
+                    cout << "Main folder already exists!" << endl;
+                }
+                break;
 
-            cout << "Enter subfolder name: ";
-            cin >> child;
+            case 2:
+                cout << "Enter parent folder name: ";
+                cin >> parent;
 
-            fm.addSubFolder(parent, child);
-            break;
+                cout << "Enter subfolder name: ";
+                cin >> child;
 
-        case 3:
-            cout << "Enter folder name to search: ";
-            cin >> folder;
-            fm.search(folder);
-            break;
+                addSubFolder(root, parent, child);
+                break;
 
-        case 4:
-            fm.displayStructure();
-            break;
+            case 3:
+                cout << "Enter folder name to search: ";
+                cin >> name;
 
-        case 5:
-            cout << "Exiting Folder Management System...\n";
-            break;
+                if (searchFolder(root, name) != NULL)
+                    cout << "Folder found!" << endl;
+                else
+                    cout << "Folder not found!" << endl;
 
-        default:
-            cout << "Invalid choice! Try again.\n";
+                break;
+
+            case 4:
+                if (root == NULL)
+                    cout << "No folders available!" << endl;
+                else
+                {
+                    cout << "\n----- FOLDER STRUCTURE -----\n";
+                    display(root, 0);
+                }
+                break;
+
+            case 5:
+                if (root == NULL)
+                    cout << "No folders available!" << endl;
+                else
+                {
+                    cout << "Preorder Traversal: ";
+                    preorder(root);
+                    cout << endl;
+                }
+                break;
+
+            case 6:
+                cout << "Exiting Folder Management System..." << endl;
+                break;
+
+            default:
+                cout << "Invalid choice! Try again." << endl;
         }
 
-    } while (choice != 5);
+    } while (choice != 6);
 
     return 0;
 }
